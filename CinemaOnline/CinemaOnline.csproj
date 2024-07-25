@@ -15,4 +15,20 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Base\" />
+    <Folder Include="Data\Cart\" />
+    <Folder Include="Data\Enums\" />
+    <Folder Include="Data\Services\" />
+    <Folder Include="Data\Static\" />
+    <Folder Include="Data\ViewComponents\" />
+    <Folder Include="ViewModels\" />
+    <Folder Include="Views\Account\" />
+    <Folder Include="Views\Actors\" />
+    <Folder Include="Views\Cinemas\" />
+    <Folder Include="Views\Movies\" />
+    <Folder Include="Views\Orders\" />
+    <Folder Include="Views\Producers\" />
+  </ItemGroup>
+
 </Project>
