@@ -8,6 +8,6 @@ namespace CinemaOnline.Models.OwnedModels
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        public double ScreenTimeInDays { get => (EndDate - StartDate).TotalDays; }
+        public double ScreenTimeInDays { get => (EndDate - StartDate).TotalDays; set { } }
     }
 }

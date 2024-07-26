@@ -11,11 +11,9 @@ namespace CinemaOnline.Data.DatabaseContext.Configurations
             builder.Property(oi => oi.Price)
                 .IsRequired();
             builder.Property(oi => oi.Amount)
-                .IsRequired();
-            builder.Property(oi => oi.Movie)
-                .IsRequired();
-            builder.Property(oi => oi.Order)
-                .IsRequired();
+                .IsRequired();                                        
+            builder.HasOne(oi => oi.Order)
+                .WithMany(o => o.OrderItems);
 
         }
          

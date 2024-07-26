@@ -17,6 +17,8 @@ namespace CinemaOnline.Data.DatabaseContext.Configurations
                 HasValueGenerator<DateTimeValueGenerator>();
             builder.HasMany(o => o.OrderItems)
                 .WithOne(oi => oi.Order);
+
+            builder.Ignore(o => o.User); // Исключаем свойство User из модели базы данных
         }
     }
 

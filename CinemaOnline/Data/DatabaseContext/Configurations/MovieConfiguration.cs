@@ -34,8 +34,8 @@ namespace CinemaOnline.Data.DatabaseContext.Configurations
                 .IsRequired();
             builder.HasMany(m => m.Actors);
 
-            builder.Property(m => m.Producer)
-                .IsRequired();
+            builder.HasOne(m => m.Producer)
+                 .WithMany(p => p.Movies);
                 
               
  

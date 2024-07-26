@@ -5,7 +5,7 @@ namespace CinemaOnline.Tests
 {
     public class DatabaseTests
     {
-        private readonly ApplicationDbContext _context;
+        private  ApplicationDbContext _context;
         private  DbContextOptionsBuilder<ApplicationDbContext> _dbContextOptionsBuilder;
 
 
@@ -16,7 +16,7 @@ namespace CinemaOnline.Tests
             //arrange
             _dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             _dbContextOptionsBuilder.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString());
-            var context = new ApplicationDbContext(_dbContextOptionsBuilder.Options);
+            _context = new ApplicationDbContext(_dbContextOptionsBuilder.Options);
 
 
             //act
