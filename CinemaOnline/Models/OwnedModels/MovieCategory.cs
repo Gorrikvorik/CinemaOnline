@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace CinemaOnline.Models.CinemaModels.OwnedModels
+namespace CinemaOnline.Models.OwnedModels
 {
- 
+
     public enum MovieCategory
     {
         Action = 1,

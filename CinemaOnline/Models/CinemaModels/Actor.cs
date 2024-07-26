@@ -1,5 +1,5 @@
 ﻿using CinemaOnline.Data.Base;
-using CinemaOnline.Models.CinemaModels.OwnedModels;
+using CinemaOnline.Models.OwnedModels;
 using System.ComponentModel.DataAnnotations;
 
 namespace CinemaOnline.Models.CinemaModels

@@ -29,59 +29,5 @@ namespace CinemaOnline.Data.DatabaseContext.Configurations
                 
         }
     }
-    public class CinemaConfiguration : IEntityTypeConfiguration<Cinema>
-    {
-        public void Configure(EntityTypeBuilder<Cinema> builder)
-        {
-            builder.ToTable("Cinemis")
-                .Property(c => c.Logo)
-                .IsRequired();
-            builder.Property(c => c.Name)
-                .IsRequired();
-            builder.Property(c => c.Description)
-                .IsRequired();
-            builder.HasMany(c => c.Movies)
-                .WithMany(m => m.Cinemas);
-
-        }
-    }
-    public class MovieConfiguration : IEntityTypeConfiguration<Movie>
-    {
-        public void Configure(EntityTypeBuilder<Movie> builder)
-        {
-            builder.ToTable("Movies")
-                .Property(m => m.Name)                
-                .IsRequired()
-                .HasMaxLength(100);
-            builder.Property(m => m.Description)
-                .IsRequired();
-            builder.Property(m => m.Price)
-                .IsRequired()
-                .HasDefaultValue(0D);
-            builder.Property(m => m.ImageURL)
-                .HasDefaultValue("image not found");
-            builder.OwnsOne(m => m.ScreeningPeriod, sp =>
-            {
-                sp.Property(sp => sp.StartDate)
-                .IsRequired();
-                sp.Property(sp => sp.EndDate)
-                .IsRequired();
-                sp.Property(sp => sp.ScreenTimeInDays)
-                .HasComment("Период времени в днях, когда фильм показывают в кинотеатре");
-            });
-            
-                
-            builder.Property(m => m.MovieCategory)
-                .IsRequired();
-            builder.HasMany(m => m.Actors);
-
-            builder.Property(m => m.Producer)
-                .IsRequired();
-                
-                
- 
-
-        }
-    }
 
 }

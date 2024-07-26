@@ -1,7 +1,7 @@
-﻿
-using CinemaOnline.Data.Base;
+﻿using CinemaOnline.Data.Base;
+using CinemaOnline.Models.CinemaModels;
 
-namespace CinemaOnline.Models.CinemaModels.OwnedModels
+namespace CinemaOnline.Models.OwnedModels
 {
     public class ActorMovies : IEntityBase
     {

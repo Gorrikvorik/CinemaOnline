@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace CinemaOnline.Models.CinemaModels.OwnedModels
+namespace CinemaOnline.Models.OwnedModels
 {
     [Owned]
     public class ScreeningPeriod
