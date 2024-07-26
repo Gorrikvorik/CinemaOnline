@@ -1,4 +1,4 @@
-using CinemaOnline.Data;
+using CinemaOnline.Data.DatabaseContext;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

@@ -16,12 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Base\" />
     <Folder Include="Data\Cart\" />
     <Folder Include="Data\Enums\" />
     <Folder Include="Data\Services\" />
     <Folder Include="Data\Static\" />
     <Folder Include="Data\ViewComponents\" />
+    <Folder Include="Data\Context\" />
     <Folder Include="ViewModels\" />
     <Folder Include="Views\Account\" />
     <Folder Include="Views\Actors\" />
