@@ -9,14 +9,13 @@ namespace CinemaOnline.Data.DatabaseContext.Configurations
         public void Configure(EntityTypeBuilder<Movie> builder)
         {
             builder.ToTable("Movies")
-                .Property(m => m.Name)                
+                .Property(m => m.Name)
                 .IsRequired()
                 .HasMaxLength(100);
             builder.Property(m => m.Description)
                 .IsRequired();
             builder.Property(m => m.Price)
-                .IsRequired()
-                .HasDefaultValue(0D);
+                .IsRequired();
             builder.Property(m => m.ImageURL)
                 .HasDefaultValue("image not found");
             builder.OwnsOne(m => m.ScreeningPeriod, sp =>

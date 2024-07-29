@@ -71,5 +71,24 @@ namespace CinemaOnline.Tests
             Assert.Equal(5, fakeActor.Rating.Score);
             Assert.Equal(2, fakeActor.ActorsMovies?.Count);
         }
+
+        [Fact]
+        public async Task AddMovie_Should_IncreaseMoviesAmount()
+        {
+            //arrange
+            var movie = new Movie();
+            movie.Description = Guid.NewGuid().ToString();
+            movie.Name = Guid.NewGuid().ToString();
+            movie.ImageURL = Guid.NewGuid().ToString();
+            var prevCount = _context.Actors.Count();
+            _context.Movies.Add(movie);
+
+            //act
+            await _context.SaveChangesAsync();
+
+            //assert
+            var newCount = _context.Movies.Count();
+            Assert.Equal(newCount, prevCount + 1);
+        }
     }
 }

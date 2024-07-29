@@ -13,6 +13,10 @@ namespace CinemaOnline.Data.Services.Cart
 
         public string ShoppingCartId { get; init; }
 
+        private IQueryable<ShoppingCartItem> _ItemsInCart { get => _context.ShoppingCartItems
+            .Where(item => item.ShoppingCartId == ShoppingCartId);
+        }
+
         public ShoppingCart(CinemaDBContext context, string shoppingCartId = null!)
         {
             _context = context;
@@ -35,7 +39,7 @@ namespace CinemaOnline.Data.Services.Cart
             return new ShoppingCart(context,cartId);
             
         }
-        private async Task<ShoppingCartItem> GetCartItem(Movie movie)
+        private async Task<ShoppingCartItem> GetCartItemByMovie(Movie movie)
         {
             if (movie is null) throw new NullReferenceException($"{nameof(movie)} is null");
             var shoppingCartItem = await _context.ShoppingCartItems
@@ -47,7 +51,7 @@ namespace CinemaOnline.Data.Services.Cart
 
         public async Task AddItemToCartAsync(Movie movie)
         {
-            var shoppingCartItem = await GetCartItem(movie);
+            var shoppingCartItem = await GetCartItemByMovie(movie);
             if (shoppingCartItem == null)
             {
                 shoppingCartItem = new ShoppingCartItem
@@ -65,35 +69,43 @@ namespace CinemaOnline.Data.Services.Cart
 
         public async Task RemoveItemFromCartAsync(Movie movie)
         {
-            var shoppingCartItem = await GetCartItem(movie);
-            if (shoppingCartItem != null)
+            var shoppingCartItem = await GetCartItemByMovie(movie);
+            if (shoppingCartItem == null) 
+                throw new NullReferenceException("shoppingcart is null");
+           
+            if (shoppingCartItem.Amount > 1)
             {
-                if (shoppingCartItem.Amount > 1)
-                {
-                    shoppingCartItem.Amount--;
-                }
-                else
-                {
-                    _context.ShoppingCartItems.Remove(shoppingCartItem);
-                }
+                shoppingCartItem.Amount--;
             }
+            else
+            {
+                _context.ShoppingCartItems.Remove(shoppingCartItem);
+            }
+           
            await _context.SaveChangesAsync();
         }
 
-        public async Task<double> GetShoppingCartTotalPrice() =>
-            await _context.ShoppingCartItems
-            .Where(item => item.ShoppingCartId == ShoppingCartId)
-            .Select(n => n.Movie.Price * n.Amount)
-            .SumAsync();
+        public async Task<double> GetShoppingCartTotalPrice()
+        {
+            if(_ItemsInCart is null )
+                throw new NullReferenceException("shoppingcart is null");
+            var movies = _ItemsInCart.Select(item => item.Movie);
+            if(movies is null ||  movies.Count() <= 0 )
+                throw new NullReferenceException("shoppingcart has zero  movies in it");
+            // if(i)
+            foreach (var movie in movies)
+                if (movie.Price < 0)
+                    throw new InvalidOperationException($"{movie.Name} \nprice is lesser then zero ");
+            return await _ItemsInCart.Select(n => n.Movie.Price * n.Amount).SumAsync();
+        }
 
         public async Task<List<ShoppingCartItem>> GetShoppingCartItemsAsync()
-            =>  await _context.ShoppingCartItems.Where(item => item.ShoppingCartId == ShoppingCartId).Include(cart => cart.Movie).ToListAsync();
+            =>  await _ItemsInCart.Include(cart => cart.Movie).ToListAsync();
 
 
         public async Task ClearShoppingCartAsync()
         {
-            var items = await _context.ShoppingCartItems.Where(n => n.ShoppingCartId == ShoppingCartId).ToListAsync();
-            _context.ShoppingCartItems.RemoveRange(items);
+            _context.ShoppingCartItems.RemoveRange(_ItemsInCart);
             await _context.SaveChangesAsync();
         }
     }
