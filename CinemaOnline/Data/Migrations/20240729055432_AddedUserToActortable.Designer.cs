@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CinemaOnline.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(CinemaDBContext))]
     [Migration("20240729055432_AddedUserToActortable")]
     partial class AddedUserToOrdertable
     {

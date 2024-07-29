@@ -16,9 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Cart\" />
     <Folder Include="Data\Enums\" />
-    <Folder Include="Data\Services\" />
     <Folder Include="Data\Static\" />
     <Folder Include="Models\ViewComponents\" />
     <Folder Include="Data\Context\" />

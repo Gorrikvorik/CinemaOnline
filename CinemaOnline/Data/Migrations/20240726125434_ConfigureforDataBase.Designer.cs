@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CinemaOnline.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(CinemaDBContext))]
     [Migration("20240726125434_ConfigureforDataBase")]
     partial class ConfigureforDataBase
     {

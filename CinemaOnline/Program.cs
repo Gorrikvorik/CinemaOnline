@@ -1,4 +1,5 @@
 using CinemaOnline.Data.DatabaseContext;
+using CinemaOnline.Data.Services.Cart;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,20 +7,40 @@ namespace CinemaOnline
 {
     public class Program
     {
+        private static IServiceCollection ConfigureServices(WebApplicationBuilder builder)
+        {
+
+            // Add services to the container.
+            //DbContext configuration
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var services = builder.Services;
+            services.AddDbContext<CinemaDBContext>(options =>
+                options.UseSqlServer(connectionString));
+            services.AddDatabaseDeveloperPageExceptionFilter();
+
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<CinemaDBContext>();
+
+
+
+            //Custom Services
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped(ShoppingCart.GetShoppingCart);
+
+
+
+
+            services.AddControllersWithViews();
+            return services;
+
+        }
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-            builder.Services.AddControllersWithViews();
-
+            //Конфигурация сервисов
+            ConfigureServices(builder);
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

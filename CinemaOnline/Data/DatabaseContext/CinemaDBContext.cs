@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CinemaOnline.Data.DatabaseContext
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class CinemaDBContext : IdentityDbContext
     {
         public DbSet<Actor> Actors { get; set; }
         public DbSet<Cinema> Cinemas { get; set; }
@@ -14,7 +14,7 @@ namespace CinemaOnline.Data.DatabaseContext
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Producer> Producers { get; set; }
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public CinemaDBContext(DbContextOptions<CinemaDBContext> options)
             : base(options)
         {
         
@@ -23,7 +23,7 @@ namespace CinemaOnline.Data.DatabaseContext
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            builder.ApplyConfigurationsFromAssembly(typeof(CinemaDBContext).Assembly);
         }
     }
 }

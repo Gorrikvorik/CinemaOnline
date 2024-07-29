@@ -9,14 +9,14 @@ namespace CinemaOnline.Tests
 {
     public class DatabaseTests
     {
-        private  ApplicationDbContext _context;
-        private  DbContextOptionsBuilder<ApplicationDbContext> _dbContextOptionsBuilder;
+        private  CinemaDBContext _context;
+        private  DbContextOptionsBuilder<CinemaDBContext> _dbContextOptionsBuilder;
         public DatabaseTests()
         {
 
-            _dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            _dbContextOptionsBuilder = new DbContextOptionsBuilder<CinemaDBContext>();
             _dbContextOptionsBuilder.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString());
-            _context = new ApplicationDbContext(_dbContextOptionsBuilder.Options);
+            _context = new CinemaDBContext(_dbContextOptionsBuilder.Options);
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();
 
@@ -27,9 +27,9 @@ namespace CinemaOnline.Tests
         public void DataBaseConfiguredAndCreated()
         {
             //arrange
-            _dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            _dbContextOptionsBuilder = new DbContextOptionsBuilder<CinemaDBContext>();
             _dbContextOptionsBuilder.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString());
-            _context = new ApplicationDbContext(_dbContextOptionsBuilder.Options);
+            _context = new CinemaDBContext(_dbContextOptionsBuilder.Options);
             _context.Database.EnsureDeleted();
 
 
