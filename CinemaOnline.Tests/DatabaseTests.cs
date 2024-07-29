@@ -24,7 +24,7 @@ namespace CinemaOnline.Tests
 
 
         [Fact]
-        public void DataBaseConfiguredAndCreated()
+        public void CreateDatabase_Returns_Void()
         {
             //arrange
             _dbContextOptionsBuilder = new DbContextOptionsBuilder<CinemaDBContext>();
@@ -43,7 +43,7 @@ namespace CinemaOnline.Tests
         }
 
         [Fact]
-        public void InserIntoActorsTable_OneActor()
+        public void InserIntoActorsTable_OneActor_Returns_Void()
         {
             //arrange
             var fakeActor = A.Fake<Actor>();

@@ -11,13 +11,12 @@ namespace CinemaOnline.Data.Services.Cart
     {
         private readonly CinemaDBContext _context;
 
-        public readonly string _shoppingCartId;
+        public string ShoppingCartId { get; init; }
 
-        public List<ShoppingCartItem>? ShoppingCartItems { get; init; }
         public ShoppingCart(CinemaDBContext context, string shoppingCartId = null!)
         {
             _context = context;
-            _shoppingCartId = shoppingCartId;
+            ShoppingCartId = shoppingCartId;
         }
 
         /// <summary>
@@ -28,9 +27,9 @@ namespace CinemaOnline.Data.Services.Cart
         /// <exception cref="NullReferenceException"></exception>
         public static ShoppingCart GetShoppingCart(IServiceProvider services)
         {
-            var session = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext?.Session;
+            var session = services.GetService<IHttpContextAccessor>()?.HttpContext?.Session;
             if (session == null) throw new NullReferenceException($"current session : {nameof(session)};  is null");
-            var context = services.GetRequiredService<CinemaDBContext>();
+            var context = services.GetService<CinemaDBContext>()!;
             string cartId = session.GetString("CartId") ?? Guid.NewGuid().ToString();
             session.SetString("CartId", cartId);
             return new ShoppingCart(context,cartId);
@@ -42,7 +41,7 @@ namespace CinemaOnline.Data.Services.Cart
             var shoppingCartItem = await _context.ShoppingCartItems
                  .FirstOrDefaultAsync(item =>
                  item.Movie.Id == movie.Id &&
-                 item.ShoppingCartId == _shoppingCartId);
+                 item.ShoppingCartId == ShoppingCartId);
             return shoppingCartItem ?? null!;
         }
 
@@ -53,7 +52,7 @@ namespace CinemaOnline.Data.Services.Cart
             {
                 shoppingCartItem = new ShoppingCartItem
                 {
-                    ShoppingCartId = _shoppingCartId,
+                    ShoppingCartId = ShoppingCartId,
                     Movie = movie,
                     Amount = 1
                 };
@@ -83,17 +82,17 @@ namespace CinemaOnline.Data.Services.Cart
 
         public async Task<double> GetShoppingCartTotalPrice() =>
             await _context.ShoppingCartItems
-            .Where(item => item.ShoppingCartId == _shoppingCartId)
+            .Where(item => item.ShoppingCartId == ShoppingCartId)
             .Select(n => n.Movie.Price * n.Amount)
             .SumAsync();
 
         public async Task<List<ShoppingCartItem>> GetShoppingCartItemsAsync()
-            => ShoppingCartItems ?? await _context.ShoppingCartItems.Where(item => item.ShoppingCartId == _shoppingCartId).Include(cart => cart.Movie).ToListAsync();
+            =>  await _context.ShoppingCartItems.Where(item => item.ShoppingCartId == ShoppingCartId).Include(cart => cart.Movie).ToListAsync();
 
 
         public async Task ClearShoppingCartAsync()
         {
-            var items = await _context.ShoppingCartItems.Where(n => n.ShoppingCartId == _shoppingCartId).ToListAsync();
+            var items = await _context.ShoppingCartItems.Where(n => n.ShoppingCartId == ShoppingCartId).ToListAsync();
             _context.ShoppingCartItems.RemoveRange(items);
             await _context.SaveChangesAsync();
         }
