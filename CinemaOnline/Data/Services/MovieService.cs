@@ -5,6 +5,8 @@ using CinemaOnline.ViewModels;
 
 namespace CinemaOnline.Data.Services
 {
+    //TODO доделать сервис по eTicket и примерам с UOW
+    //https://github.com/etrupja/complete-ecommerce-aspnet-mvc-application
     public class MovieService : IMovieService
     {
         private readonly IUnitOfWork _unitOfWork;

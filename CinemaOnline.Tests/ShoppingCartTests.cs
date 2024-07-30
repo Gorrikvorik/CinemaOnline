@@ -4,7 +4,6 @@ using CinemaOnline.Models.CinemaModels;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -16,20 +15,20 @@ using System.Threading.Tasks;
 namespace CinemaOnline.Tests
 {
     //TODO добавить тесты при асинхронных запросах в карзину ( несколько источников пытаются что то сделать в карзине в одно и тоже время)
-    //нужен UoW, транзакции и тд
-    public class ShoppingCartTests
+    /* нужен UoW, транзакции и тд
+    1)  Добавить во все операции UOW
+    2)  Проверить что все корректно работает
+    3)  Не изменять  поведение тестов
+    4)  Добавить проверки содержимого БД после добавления UOW
+    */
+
+    public class ShoppingCartTests : BaseTest
     {
-        private readonly CinemaDBContext _context;
         private readonly ShoppingCart cart;
        
-        public ShoppingCartTests()
+        public ShoppingCartTests():base()
         {
-            var _dbContextOptionsBuilder = new DbContextOptionsBuilder<CinemaDBContext>();
-            _dbContextOptionsBuilder.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString());
- 
-            _context = new CinemaDBContext(_dbContextOptionsBuilder.Options);
-            _context.Database.EnsureDeleted();
-            _context.Database.EnsureCreated();
+            
             var session = A.Fake<ISession>();
             var httpContext = A.Fake<HttpContext>();
             A.CallTo(() => httpContext.Session).Returns(session);
