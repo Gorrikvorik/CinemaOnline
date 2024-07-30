@@ -7,19 +7,27 @@ namespace CinemaOnline.Data.Services.Cart
     /// <summary>
     /// Класс, описывающей карзину покупок билетов в кино
     /// </summary>
-    public class ShoppingCart
+    public class ShoppingCart : IShoppingCart
     {
         private readonly CinemaDBContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public string ShoppingCartId { get; init; }
 
-        private IQueryable<ShoppingCartItem> _ItemsInCart { get => _context.ShoppingCartItems
+        private IQueryable<ShoppingCartItem> _ItemsInCart
+        {
+            get => _context.ShoppingCartItems
             .Where(item => item.ShoppingCartId == ShoppingCartId);
         }
 
-        public ShoppingCart(CinemaDBContext context, string shoppingCartId = null!)
+        public ShoppingCart(CinemaDBContext context, IHttpContextAccessor httpContextAccessor, string shoppingCartId = null!)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            var session = _httpContextAccessor.HttpContext.Session;
+            if (session == null) throw new NullReferenceException($"current session : {nameof(session)};  is null");
+            string cartId = session.GetString("CartId") ?? Guid.NewGuid().ToString();
+            session.SetString("CartId", cartId);
             ShoppingCartId = shoppingCartId;
         }
 
@@ -29,16 +37,7 @@ namespace CinemaOnline.Data.Services.Cart
         /// <param name="services"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public static ShoppingCart GetShoppingCart(IServiceProvider services)
-        {
-            var session = services.GetService<IHttpContextAccessor>()?.HttpContext?.Session;
-            if (session == null) throw new NullReferenceException($"current session : {nameof(session)};  is null");
-            var context = services.GetService<CinemaDBContext>()!;
-            string cartId = session.GetString("CartId") ?? Guid.NewGuid().ToString();
-            session.SetString("CartId", cartId);
-            return new ShoppingCart(context,cartId);
-            
-        }
+ 
         private async Task<ShoppingCartItem> GetCartItemByMovie(Movie movie)
         {
             if (movie is null) throw new NullReferenceException($"{nameof(movie)} is null");
@@ -70,9 +69,9 @@ namespace CinemaOnline.Data.Services.Cart
         public async Task RemoveItemFromCartAsync(Movie movie)
         {
             var shoppingCartItem = await GetCartItemByMovie(movie);
-            if (shoppingCartItem == null) 
+            if (shoppingCartItem == null)
                 throw new NullReferenceException("shoppingcart is null");
-           
+
             if (shoppingCartItem.Amount > 1)
             {
                 shoppingCartItem.Amount--;
@@ -81,16 +80,16 @@ namespace CinemaOnline.Data.Services.Cart
             {
                 _context.ShoppingCartItems.Remove(shoppingCartItem);
             }
-           
-           await _context.SaveChangesAsync();
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task<double> GetShoppingCartTotalPrice()
         {
-            if(_ItemsInCart is null )
+            if (_ItemsInCart is null)
                 throw new NullReferenceException("shoppingcart is null");
             var movies = _ItemsInCart.Select(item => item.Movie);
-            if(movies is null ||  movies.Count() <= 0 )
+            if (movies is null || movies.Count() <= 0)
                 throw new NullReferenceException("shoppingcart has zero  movies in it");
             // if(i)
             foreach (var movie in movies)
@@ -100,11 +99,13 @@ namespace CinemaOnline.Data.Services.Cart
         }
 
         public async Task<List<ShoppingCartItem>> GetShoppingCartItemsAsync()
-            =>  await _ItemsInCart.Include(cart => cart.Movie).ToListAsync();
+            => await _ItemsInCart.Include(cart => cart.Movie).ToListAsync();
 
 
         public async Task ClearShoppingCartAsync()
         {
+            if (_ItemsInCart.Count() <= 0)
+                throw new NullReferenceException("shoppingcart has zero  movies in it");
             _context.ShoppingCartItems.RemoveRange(_ItemsInCart);
             await _context.SaveChangesAsync();
         }

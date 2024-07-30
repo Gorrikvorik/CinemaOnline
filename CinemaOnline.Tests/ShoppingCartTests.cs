@@ -28,21 +28,15 @@ namespace CinemaOnline.Tests
             _context = new CinemaDBContext(_dbContextOptionsBuilder.Options);
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();
-
-            var services = A.Fake<IServiceProvider>();
-            var httpContextAccessor = A.Fake<IHttpContextAccessor>();
-            var httpContext = A.Fake<HttpContext>();
-            A.CallTo(() => services.GetService(typeof(IHttpContextAccessor)))
-                .Returns(httpContextAccessor);
-            httpContextAccessor.HttpContext = A.Fake<HttpContext>();
             var session = A.Fake<ISession>();
-            A.CallTo(() => services.GetService(typeof(IHttpContextAccessor)))
-              .Returns(httpContextAccessor);
-            A.CallTo(() => services.GetService(typeof(CinemaDBContext)))
-                .Returns(_context);
-            httpContext.Session = session;
-            httpContextAccessor.HttpContext = httpContext;
-            cart = ShoppingCart.GetShoppingCart(services);
+            var httpContext = A.Fake<HttpContext>();
+            A.CallTo(() => httpContext.Session).Returns(session);
+
+            var httpContextAccessor = A.Fake<IHttpContextAccessor>();
+            A.CallTo(() => httpContextAccessor.HttpContext).Returns(httpContext);
+            string newCartId = Guid.NewGuid().ToString();
+            cart = new ShoppingCart(_context, httpContextAccessor, newCartId);
+ 
 
         }
 
@@ -60,7 +54,7 @@ namespace CinemaOnline.Tests
 
 
             //Act & Assert
-            Assert.Throws<NullReferenceException>(() => ShoppingCart.GetShoppingCart(services));
+            Assert.Throws<NullReferenceException>(() => new ShoppingCart(_context,httpContextAccessor));
 
         }
         [Fact]
@@ -82,34 +76,17 @@ namespace CinemaOnline.Tests
             httpContextAccessor.HttpContext = httpContext;
 
             //act
-            var cart = ShoppingCart.GetShoppingCart(services);
+            var cart = new ShoppingCart(_context, httpContextAccessor);
 
 
             //Assert
             cart.Should().NotBeNull();
-            
+
 
         }
 
 
-        private ShoppingCart FakeShoppingCart()
-        {
-            var services = A.Fake<IServiceProvider>();
-            var httpContextAccessor = A.Fake<IHttpContextAccessor>();
-            var httpContext = A.Fake<HttpContext>();
-            A.CallTo(() => services.GetService(typeof(IHttpContextAccessor)))
-                .Returns(httpContextAccessor);
-            httpContextAccessor.HttpContext = A.Fake<HttpContext>();
-            var session = A.Fake<ISession>();
-            A.CallTo(() => services.GetService(typeof(IHttpContextAccessor)))
-              .Returns(httpContextAccessor);
-            A.CallTo(() => services.GetService(typeof(CinemaDBContext)))
-                .Returns(_context);
-            httpContext.Session = session;
-            httpContextAccessor.HttpContext = httpContext;
-
-          return  ShoppingCart.GetShoppingCart(services);
-        }
+   
 
         [Fact]
         public async Task AddToEmptyShoppingCartOneValidMovie_Returns_Void()
@@ -292,19 +269,36 @@ namespace CinemaOnline.Tests
 
 
         [Fact]
-        public async Task ClearShoppingCart_Must_Act_JustOneTime()
+        public async Task ClearShoppingCart_ClearsWhenItemsInCar()
         {
             //Arrange
             var movie = A.Fake<Movie>();
             movie.Description = Guid.NewGuid().ToString();
             movie.Name = Guid.NewGuid().ToString();
             movie.ImageURL = Guid.NewGuid().ToString();
-            //for (int i = 0; i < movieCount; i++)
-            //{
-            //    movie.Price = (double)i;
-            //    await cart.AddItemToCartAsync(movie);
-            //}
+            for (int i = 0; i < 5; i++)
+            {
+                movie.Price = i;
+                await cart.AddItemToCartAsync(movie);
+            }
+            var cartitemsBefore = _context.ShoppingCartItems.FirstOrDefault(x => x.ShoppingCartId == cart.ShoppingCartId)!.Amount;
+            //Act
+            await cart.ClearShoppingCartAsync();
 
+            //Assert
+            var cartitemsAfter = _context.ShoppingCartItems.FirstOrDefault(x => x.ShoppingCartId == cart.ShoppingCartId)?.Amount ?? 0;
+            cartitemsAfter.Should().NotBe(cartitemsBefore);
+
+
+
+
+        }
+
+        [Fact] 
+        public async Task ClearShoppingCart_ThrowsNullExceptionWhenZeroItemsInCart()
+        {
+            //Assert  & Act
+            await Assert.ThrowsAsync<NullReferenceException>(async () => await cart.ClearShoppingCartAsync());
         }
     }
 }

@@ -21,11 +21,9 @@ namespace CinemaOnline
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<CinemaDBContext>();
 
-
-
             //Custom Services
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped(ShoppingCart.GetShoppingCart);
+            services.AddScoped<IShoppingCart,ShoppingCart>();
 
 
 
