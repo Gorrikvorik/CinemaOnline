@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 
 namespace CinemaOnline.Tests
 {
+    //todo добавить тесты при асинхронных запросах в карзину ( несколько источников пытаются что то сделать в карзине в одно и тоже время)
+    //нужен UoW, транзакции и тд
     public class ShoppingCartTests
     {
         private readonly CinemaDBContext _context;
