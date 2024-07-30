@@ -22,6 +22,12 @@ namespace CinemaOnline
                 .AddEntityFrameworkStores<CinemaDBContext>();
 
             //Custom Services
+            //TODO добавить зависимости 
+            /*
+             * 1) репозитории
+             * 2) юнитофворк
+             * 3) автомаппер
+            */
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IShoppingCart,ShoppingCart>();
 

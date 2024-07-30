@@ -9,10 +9,13 @@ namespace CinemaOnline.Data.Base
         private Dictionary<Type, object>? _repos;
         private IDbContextTransaction? _transaction;
         private bool disposedValue;
+        private bool isRollbacked = false;
+        private bool isCommitted = false;
 
         public UnitOfWork(CinemaDBContext context)
         {
             _context = context;
+            _transaction =  _context.Database.BeginTransaction();
         }
 
 
@@ -30,20 +33,26 @@ namespace CinemaOnline.Data.Base
             return (IEntityBaseRepository<TEntity>)_repos[type];
         }
 
-        public async Task BeginTransactionAsync()
-        {
-            _transaction = await _context.Database.BeginTransactionAsync();
-
-        }
+ 
 
         public async Task CommitAsync()
         {
+            if (isCommitted || isRollbacked)
+            {
+                throw new Exception("commit or rollback has been called.");
+            }
+            await _context.SaveChangesAsync();
             await _transaction.CommitAsync();
+            isCommitted = true;
 
         }
 
         public async Task RollBackAsync()
         {
+            if (isCommitted || isRollbacked)
+            {
+                throw new Exception("commit or rollback has been called.");
+            }
             await _transaction.RollbackAsync();
             DisposeTransaction();
         }
