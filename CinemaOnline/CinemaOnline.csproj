@@ -18,7 +18,6 @@
   <ItemGroup>
     <Folder Include="Data\Static\" />
     <Folder Include="Models\ViewComponents\" />
-    <Folder Include="Data\Context\" />
     <Folder Include="ViewModels\" />
     <Folder Include="Views\Account\" />
     <Folder Include="Views\Actors\" />
